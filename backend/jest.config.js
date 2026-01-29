@@ -13,4 +13,5 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(uuid)/)',
   ],
+  setupFiles: ['<rootDir>/jest.setup.js'],
 };
