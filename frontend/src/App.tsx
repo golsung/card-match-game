@@ -1,10 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+
+  // Test CORS and Proxy connection to backend
+  useEffect(() => {
+    const testBackendConnection = async () => {
+      try {
+        const response = await axios.get('/api/health')
+        console.log('✅ Backend connection successful:', response.data)
+        console.log('✅ No CORS errors!')
+      } catch (error) {
+        console.error('❌ Backend connection failed:', error)
+      }
+    }
+
+    testBackendConnection()
+  }, [])
 
   return (
     <>
