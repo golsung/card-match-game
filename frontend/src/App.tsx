@@ -1,11 +1,12 @@
-import { useState } from 'react'
 import { ThemeProvider } from 'styled-components'
 import styled from 'styled-components'
 import { GlobalStyle } from './styles/GlobalStyle'
 import theme from './styles/theme'
 import { Header } from './components/Header'
 import { GameBoard } from './components/GameBoard'
-import type { Card } from './types/Card'
+import { GameProvider } from './contexts/GameContext'
+import { useGameContext } from './contexts/GameContext'
+import { useGameInitializer } from './hooks/useGameInitializer'
 
 /**
  * App Container
@@ -43,60 +44,98 @@ const GameContainer = styled.div`
 `
 
 /**
- * 더미 카드 데이터 생성
- * 16개의 카드 (8종류 x 2장)
+ * Loading Container
+ * 로딩 중일 때 표시되는 컨테이너
  */
-const createDummyCards = (): Card[] => {
-  const fruitTypes = ['apple', 'banana', 'cherry', 'grape', 'lemon', 'orange', 'strawberry', 'watermelon']
-  const cards: Card[] = []
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: ${({ theme }) => theme.fontSizes.xl};
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+`
 
-  fruitTypes.forEach((fruit, index) => {
-    // 각 과일당 2장씩
-    for (let i = 0; i < 2; i++) {
-      cards.push({
-        id: `${fruit}-${i}-${Date.now()}-${index}`,
-        type: fruit,
-        imgUrl: `/images/${fruit}.png`,
-        isFlipped: false,
-        isSolved: false,
-      })
-    }
-  })
+/**
+ * Error Container
+ * 에러 발생 시 표시되는 컨테이너
+ */
+const ErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.xl};
+  color: ${({ theme }) => theme.colors.danger};
+  font-size: ${({ theme }) => theme.fontSizes.md};
+  text-align: center;
+`
 
-  return cards
-}
+/**
+ * Game Component
+ * 실제 게임 UI를 렌더링하는 컴포넌트
+ * GameProvider 내부에서 사용되어야 합니다.
+ */
+function Game() {
+  // 게임 초기화 (컴포넌트 마운트 시 API 호출)
+  useGameInitializer()
 
-function App() {
-  // 게임 상태: 남은 생명 (초기값: 3)
-  const [life] = useState(3)
-
-  // 더미 카드 데이터 (Issue #34 이후 실제 API 호출로 교체됨)
-  const [cards, setCards] = useState<Card[]>(createDummyCards())
+  // Context에서 게임 상태 가져오기
+  const { state } = useGameContext()
 
   /**
-   * 카드 클릭 핸들러
-   * 카드를 뒤집는 로직 (임시 구현)
+   * 카드 클릭 핸들러 (임시)
+   * Issue #38에서 실제 로직 구현 예정
    */
   const handleCardClick = (cardId: string) => {
     console.log('Card clicked:', cardId)
+    // TODO: Issue #38에서 FLIP_CARD 액션 디스패치 구현
+  }
 
-    // 임시: 클릭한 카드를 뒤집기
-    setCards((prevCards) =>
-      prevCards.map((card) =>
-        card.id === cardId ? { ...card, isFlipped: !card.isFlipped } : card
-      )
+  // 로딩 중일 때
+  if (state.isLoading) {
+    return (
+      <GameContainer>
+        <LoadingContainer>Loading...</LoadingContainer>
+      </GameContainer>
     )
   }
 
+  // 에러 발생 시
+  if (state.error) {
+    return (
+      <GameContainer>
+        <ErrorContainer>
+          <div>⚠️ 게임을 시작할 수 없습니다</div>
+          <div>{state.error}</div>
+        </ErrorContainer>
+      </GameContainer>
+    )
+  }
+
+  // 게임 플레이 화면
+  return (
+    <GameContainer>
+      <Header life={state.life} />
+      <GameBoard cards={state.cards} onCardClick={handleCardClick} />
+    </GameContainer>
+  )
+}
+
+/**
+ * App Component
+ * 전체 앱의 루트 컴포넌트
+ */
+function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-      <AppContainer>
-        <GameContainer>
-          <Header life={life} />
-          <GameBoard cards={cards} onCardClick={handleCardClick} />
-        </GameContainer>
-      </AppContainer>
+      <GameProvider>
+        <AppContainer>
+          <Game />
+        </AppContainer>
+      </GameProvider>
     </ThemeProvider>
   )
 }
