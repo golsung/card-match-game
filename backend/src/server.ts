@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import gameRouter from './routes/game';
 
 const app = express();
 const PORT = 3001;
@@ -13,10 +14,15 @@ app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
-  console.log(`📋 Health Check: http://localhost:${PORT}/health`);
-});
+// Game Routes
+app.use('/game', gameRouter);
+
+// Start Server (only if not in test environment)
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    console.log(`📋 Health Check: http://localhost:${PORT}/health`);
+  });
+}
 
 export default app;
