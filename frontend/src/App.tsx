@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { ThemeProvider } from 'styled-components'
 import styled from 'styled-components'
 import { GlobalStyle } from './styles/GlobalStyle'
 import theme from './styles/theme'
+import { Header } from './components/Header'
 
 /**
  * App Container
@@ -67,19 +69,30 @@ const Description = styled.p`
 `
 
 function App() {
+  // 게임 상태: 남은 생명 (초기값: 3)
+  const [life, setLife] = useState(3)
+
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <AppContainer>
         <GameContainer>
+          <Header life={life} />
           <PlaceholderContent>
             <Title>카드 짝 맞추기 게임</Title>
             <Description>
-              600x600px 게임 컨테이너가 화면 중앙에 배치되었습니다.
+              Header 컴포넌트가 추가되었습니다!
             </Description>
             <Description>
-              다음 이슈에서 Header, GameBoard, Card 컴포넌트가 추가됩니다.
+              다음 이슈에서 GameBoard, Card 컴포넌트가 추가됩니다.
             </Description>
+            {/* 테스트용: life 변경 버튼 */}
+            <button
+              onClick={() => setLife((prev) => Math.max(0, prev - 1))}
+              style={{ marginTop: '20px', padding: '10px 20px', cursor: 'pointer' }}
+            >
+              Life 감소 (현재: {life})
+            </button>
           </PlaceholderContent>
         </GameContainer>
       </AppContainer>
