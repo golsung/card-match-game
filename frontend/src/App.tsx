@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import { GlobalStyle } from './styles/GlobalStyle'
 import theme from './styles/theme'
 import { Header } from './components/Header'
+import { GameBoard } from './components/GameBoard'
+import type { Card } from './types/Card'
 
 /**
  * App Container
@@ -41,36 +43,35 @@ const GameContainer = styled.div`
 `
 
 /**
- * Placeholder Content
- * 임시 플레이스홀더 (다음 이슈에서 Header, GameBoard 등으로 교체됨)
+ * 더미 카드 데이터 생성
+ * 16개의 카드 (8종류 x 2장)
  */
-const PlaceholderContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  gap: ${({ theme }) => theme.spacing.md};
-`
+const createDummyCards = (): Card[] => {
+  const fruitTypes = ['apple', 'banana', 'cherry', 'grape', 'lemon', 'orange', 'strawberry', 'watermelon']
+  const cards: Card[] = []
 
-const Title = styled.h1`
-  color: ${({ theme }) => theme.colors.primary};
-  font-size: ${({ theme }) => theme.fontSizes.xxxl};
-  margin: 0;
-`
+  fruitTypes.forEach((fruit, index) => {
+    // 각 과일당 2장씩
+    for (let i = 0; i < 2; i++) {
+      cards.push({
+        id: `${fruit}-${i}-${Date.now()}-${index}`,
+        type: fruit,
+        imgUrl: `/images/${fruit}.png`,
+        isFlipped: false,
+        isSolved: false,
+      })
+    }
+  })
 
-const Description = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.fontSizes.md};
-  margin: 0;
-  text-align: center;
-`
+  return cards
+}
 
 function App() {
   // 게임 상태: 남은 생명 (초기값: 3)
-  const [life, setLife] = useState(3)
+  const [life] = useState(3)
+
+  // 더미 카드 데이터 (Issue #34 이후 실제 API 호출로 교체됨)
+  const [cards] = useState<Card[]>(createDummyCards())
 
   return (
     <ThemeProvider theme={theme}>
@@ -78,22 +79,7 @@ function App() {
       <AppContainer>
         <GameContainer>
           <Header life={life} />
-          <PlaceholderContent>
-            <Title>카드 짝 맞추기 게임</Title>
-            <Description>
-              Header 컴포넌트가 추가되었습니다!
-            </Description>
-            <Description>
-              다음 이슈에서 GameBoard, Card 컴포넌트가 추가됩니다.
-            </Description>
-            {/* 테스트용: life 변경 버튼 */}
-            <button
-              onClick={() => setLife((prev) => Math.max(0, prev - 1))}
-              style={{ marginTop: '20px', padding: '10px 20px', cursor: 'pointer' }}
-            >
-              Life 감소 (현재: {life})
-            </button>
-          </PlaceholderContent>
+          <GameBoard cards={cards} />
         </GameContainer>
       </AppContainer>
     </ThemeProvider>
