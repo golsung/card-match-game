@@ -1,12 +1,15 @@
 import styled from 'styled-components'
-import type { Card } from '../types/Card'
+import type { Card as CardType } from '../types/Card'
+import { Card } from './Card'
 
 /**
  * GameBoard Props Interface
  */
 interface GameBoardProps {
   /** 16개의 카드 배열 */
-  cards: Card[]
+  cards: CardType[]
+  /** 카드 클릭 핸들러 */
+  onCardClick: (cardId: string) => void
 }
 
 /**
@@ -23,49 +26,33 @@ const BoardContainer = styled.div`
 `
 
 /**
- * Card Placeholder
- * 임시 카드 표시 (Issue #34에서 실제 Card 컴포넌트로 교체됨)
+ * Card Wrapper
+ * Card 컴포넌트를 Grid에 맞추기 위한 래퍼
  */
-const CardPlaceholder = styled.div`
-  aspect-ratio: 1; /* 정사각형 유지 */
-  background-color: ${({ theme }) => theme.colors.cardBack};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
+const CardWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  color: ${({ theme }) => theme.colors.textLight};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  box-shadow: ${({ theme }) => theme.shadows.sm};
-  transition: transform ${({ theme }) => theme.transitions.fast};
-  cursor: pointer;
-  word-break: break-all;
-  padding: ${({ theme }) => theme.spacing.xs};
-  text-align: center;
-
-  &:hover {
-    transform: scale(1.05);
-  }
 `
 
 /**
  * GameBoard Component
  * 16개의 카드를 4x4 Grid로 표시하는 게임 보드
  *
- * @param {Card[]} cards - 16개의 카드 배열
+ * @param {CardType[]} cards - 16개의 카드 배열
+ * @param {Function} onCardClick - 카드 클릭 핸들러
  * @returns {JSX.Element} GameBoard 컴포넌트
  *
  * @example
- * <GameBoard cards={cards} />
+ * <GameBoard cards={cards} onCardClick={handleCardClick} />
  */
-export const GameBoard: React.FC<GameBoardProps> = ({ cards }) => {
+export const GameBoard: React.FC<GameBoardProps> = ({ cards, onCardClick }) => {
   return (
     <BoardContainer>
       {cards.map((card) => (
-        <CardPlaceholder key={card.id}>
-          {/* 임시로 카드 ID 표시 (처음 8자만) */}
-          {card.id.substring(0, 8)}
-        </CardPlaceholder>
+        <CardWrapper key={card.id}>
+          <Card cardData={card} onClick={() => onCardClick(card.id)} />
+        </CardWrapper>
       ))}
     </BoardContainer>
   )

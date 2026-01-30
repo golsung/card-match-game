@@ -71,7 +71,22 @@ function App() {
   const [life] = useState(3)
 
   // 더미 카드 데이터 (Issue #34 이후 실제 API 호출로 교체됨)
-  const [cards] = useState<Card[]>(createDummyCards())
+  const [cards, setCards] = useState<Card[]>(createDummyCards())
+
+  /**
+   * 카드 클릭 핸들러
+   * 카드를 뒤집는 로직 (임시 구현)
+   */
+  const handleCardClick = (cardId: string) => {
+    console.log('Card clicked:', cardId)
+
+    // 임시: 클릭한 카드를 뒤집기
+    setCards((prevCards) =>
+      prevCards.map((card) =>
+        card.id === cardId ? { ...card, isFlipped: !card.isFlipped } : card
+      )
+    )
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -79,7 +94,7 @@ function App() {
       <AppContainer>
         <GameContainer>
           <Header life={life} />
-          <GameBoard cards={cards} />
+          <GameBoard cards={cards} onCardClick={handleCardClick} />
         </GameContainer>
       </AppContainer>
     </ThemeProvider>
