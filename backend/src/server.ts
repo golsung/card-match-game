@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import gameRouter from './routes/game';
+import { notFoundHandler, errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 const PORT = 3001;
@@ -16,6 +17,10 @@ app.get('/health', (req: Request, res: Response) => {
 
 // Game Routes
 app.use('/game', gameRouter);
+
+// Error Handling Middlewares (must be last)
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 // Start Server (only if not in test environment)
 if (process.env.NODE_ENV !== 'test') {
