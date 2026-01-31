@@ -81,16 +81,51 @@ function Game() {
   // 게임 초기화 (컴포넌트 마운트 시 API 호출)
   useGameInitializer()
 
-  // Context에서 게임 상태 가져오기
-  const { state } = useGameContext()
+  // Context에서 게임 상태 가져오기 및 디스패치
+  const { state, dispatch } = useGameContext()
 
   /**
-   * 카드 클릭 핸들러 (임시)
-   * Issue #38에서 실제 로직 구현 예정
+   * 카드 클릭 핸들러
+   * 카드를 뒤집는 로직을 처리합니다.
+   *
+   * Guard Clause 패턴을 사용하여 엣지 케이스를 처리:
+   * 1. 이미 Solved 카드는 클릭 무시
+   * 2. 이미 Flipped 카드는 클릭 무시
+   * 3. flippedCards가 2개일 때는 클릭 무시
+   *
+   * @param cardId - 클릭한 카드의 ID
    */
   const handleCardClick = (cardId: string) => {
-    console.log('Card clicked:', cardId)
-    // TODO: Issue #38에서 FLIP_CARD 액션 디스패치 구현
+    // 클릭한 카드 찾기
+    const clickedCard = state.cards.find((card) => card.id === cardId)
+
+    // 카드를 찾지 못한 경우 (비정상 상황)
+    if (!clickedCard) {
+      console.warn('[Card Click] Card not found:', cardId)
+      return
+    }
+
+    // Guard Clause 1: 이미 짝이 맞춰진 카드는 클릭 무시
+    if (clickedCard.isSolved) {
+      console.log('[Card Click] Ignored: Card already solved')
+      return
+    }
+
+    // Guard Clause 2: 이미 뒤집힌 카드는 클릭 무시
+    if (clickedCard.isFlipped) {
+      console.log('[Card Click] Ignored: Card already flipped')
+      return
+    }
+
+    // Guard Clause 3: 이미 2장이 뒤집혀 있으면 클릭 무시
+    if (state.flippedCards.length >= 2) {
+      console.log('[Card Click] Ignored: Two cards already flipped')
+      return
+    }
+
+    // 모든 Guard Clause를 통과하면 카드 뒤집기
+    console.log('[Card Click] Flipping card:', cardId)
+    dispatch({ type: 'FLIP_CARD', payload: { cardId } })
   }
 
   // 로딩 중일 때
