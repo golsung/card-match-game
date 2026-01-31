@@ -226,7 +226,11 @@ function Game() {
   return (
     <GameContainer>
       <Header life={state.life} />
-      <GameBoard cards={state.cards} onCardClick={handleCardClick} />
+      <GameBoard
+        cards={state.cards}
+        onCardClick={handleCardClick}
+        isMatching={state.isMatching}
+      />
     </GameContainer>
   )
 }
