@@ -24,11 +24,12 @@ const AppContainer = styled.div`
 
 /**
  * Game Container
- * 600x600px 크기의 게임 영역
+ * 반응형 게임 영역 (화면 크기에 맞춰 조절)
  */
 const GameContainer = styled.div`
-  width: 600px;
-  height: 600px;
+  width: 100%;
+  max-width: 700px; /* 최대 크기 제한 */
+  aspect-ratio: 1; /* 정사각형 유지 */
   background-color: ${({ theme }) => theme.colors.cardFront};
   border-radius: ${({ theme }) => theme.borderRadius.lg};
   box-shadow: ${({ theme }) => theme.shadows.lg};
@@ -36,10 +37,8 @@ const GameContainer = styled.div`
   flex-direction: column;
   overflow: hidden;
 
-  /* 반응형 디자인: 작은 화면에서는 화면 크기에 맞춤 */
+  /* 작은 화면에서 최소 높이 보장 */
   @media (max-width: 640px) {
-    width: 100%;
-    height: auto;
     min-height: 500px;
   }
 `
