@@ -18,9 +18,8 @@ interface CardProps {
  * perspective를 적용하여 3D 효과 활성화
  */
 const CardContainer = styled.div`
-  width: 100%; /* 부모 GridCell에 맞춤 */
-  aspect-ratio: 1; /* 정사각형 비율 유지 */
-  max-width: 140px; /* 큰 화면에서 최대 크기 제한 */
+  width: 100%; /* 부모 GridCell에 100% 맞춤 */
+  height: 100%; /* 높이도 100% 맞춤 */
   cursor: pointer;
   position: relative;
   perspective: 1000px; /* 3D 효과를 위한 perspective */
@@ -79,9 +78,10 @@ const CardFront = styled(CardFace)`
  * Card Emoji
  * 과일 emoji를 표시하는 컴포넌트
  * 이미지가 없는 경우 emoji를 대안으로 사용
+ * 카드 크기에 비례하여 반응형으로 조절
  */
 const CardEmoji = styled.div`
-  font-size: 64px; /* 큰 emoji 표시 */
+  font-size: clamp(40px, 8vw, 64px); /* 반응형 emoji 크기 */
   user-select: none; /* 드래그 방지 */
   line-height: 1;
 `
