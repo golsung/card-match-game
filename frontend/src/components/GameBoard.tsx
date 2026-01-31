@@ -25,7 +25,7 @@ const BoardContainer = styled.div<{ $isMatching: boolean }>`
   grid-template-columns: repeat(4, 1fr); /* 4열 고정 */
   grid-template-rows: repeat(4, 1fr); /* 4행 고정 (균등 배분) */
   gap: ${({ theme }) => theme.spacing.sm}; /* 10px */
-  padding: ${({ theme }) => theme.spacing.md}; /* 16px (lg에서 md로 축소) */
+  padding: ${({ theme }) => theme.spacing.sm}; /* 10px (md에서 sm으로 축소하여 카드 공간 확보) */
   background-color: ${({ theme }) => theme.colors.background};
   pointer-events: ${({ $isMatching }) =>
     $isMatching ? 'none' : 'auto'}; /* 매칭 판별 중에는 클릭 차단 */

@@ -20,6 +20,8 @@ interface CardProps {
 const CardContainer = styled.div`
   width: 100%; /* 부모 GridCell에 100% 맞춤 */
   height: 100%; /* 높이도 100% 맞춤 */
+  min-width: 100px; /* 최소 크기 보장 */
+  min-height: 100px; /* 최소 크기 보장 */
   cursor: pointer;
   position: relative;
   perspective: 1000px; /* 3D 효과를 위한 perspective */
@@ -81,7 +83,7 @@ const CardFront = styled(CardFace)`
  * 카드 크기에 비례하여 반응형으로 조절
  */
 const CardEmoji = styled.div`
-  font-size: clamp(40px, 8vw, 64px); /* 반응형 emoji 크기 */
+  font-size: clamp(48px, 6vw, 72px); /* 반응형 emoji 크기 (더 크게) */
   user-select: none; /* 드래그 방지 */
   line-height: 1;
 `
