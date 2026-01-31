@@ -30,7 +30,7 @@ const AppContainer = styled.div`
  */
 const GameContainer = styled.div`
   width: 100%;
-  max-width: 700px; /* 최대 크기 제한 */
+  max-width: 900px; /* 최대 크기 확대 (700px → 900px) */
   aspect-ratio: 1; /* 정사각형 유지 */
   background-color: ${({ theme }) => theme.colors.cardFront};
   border-radius: ${({ theme }) => theme.borderRadius.lg};
