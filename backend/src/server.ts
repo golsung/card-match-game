@@ -16,7 +16,7 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // Game Routes
-app.use('/game', gameRouter);
+app.use('/api/game', gameRouter);
 
 // Error Handling Middlewares (must be last)
 app.use(notFoundHandler);
