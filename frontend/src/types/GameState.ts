@@ -31,6 +31,9 @@ export interface GameState {
 
   /** 에러 메시지 */
   error: string | null;
+
+  /** 매칭 판별 중 여부 */
+  isMatching: boolean;
 }
 
 /**
@@ -46,4 +49,5 @@ export type GameAction =
   | { type: 'VICTORY' }
   | { type: 'RESET_GAME' }
   | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_ERROR'; payload: string };
+  | { type: 'SET_ERROR'; payload: string }
+  | { type: 'SET_MATCHING'; payload: boolean };

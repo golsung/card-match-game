@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { ThemeProvider } from 'styled-components'
 import styled from 'styled-components'
 import { GlobalStyle } from './styles/GlobalStyle'
@@ -92,6 +93,7 @@ function Game() {
    * 1. 이미 Solved 카드는 클릭 무시
    * 2. 이미 Flipped 카드는 클릭 무시
    * 3. flippedCards가 2개일 때는 클릭 무시
+   * 4. 매칭 판별 중일 때는 클릭 무시
    *
    * @param cardId - 클릭한 카드의 ID
    */
@@ -123,10 +125,62 @@ function Game() {
       return
     }
 
-    // 모든 Guard Clause를 통과하면 카드 뒤집기
+    // Guard Clause 4: 매칭 판별 중일 때는 클릭 무시
+    if (state.isMatching) {
+      console.log('[Card Click] Ignored: Matching in progress')
+      return
+    }
+
+      // 모든 Guard Clause를 통과하면 카드 뒤집기
     console.log('[Card Click] Flipping card:', cardId)
     dispatch({ type: 'FLIP_CARD', payload: { cardId } })
   }
+
+  /**
+   * 매칭 판별 로직
+   * flippedCards의 길이가 2가 되면 자동으로 실행됩니다.
+   *
+   * - 두 카드의 type이 같으면 MATCH_SUCCESS 디스패치
+   * - 두 카드의 type이 다르면 1초 후 MATCH_FAIL 디스패치
+   * - 매칭 판별 중에는 isMatching 플래그를 true로 설정
+   */
+  useEffect(() => {
+    // flippedCards가 정확히 2개일 때만 실행
+    if (state.flippedCards.length !== 2) {
+      return
+    }
+
+    // 매칭 판별 시작
+    dispatch({ type: 'SET_MATCHING', payload: true })
+
+    const [firstCard, secondCard] = state.flippedCards
+
+    // 두 카드의 type 비교
+    if (firstCard.type === secondCard.type) {
+      // 매칭 성공: 즉시 MATCH_SUCCESS 디스패치
+      console.log('[Matching] Success:', firstCard.type)
+      dispatch({
+        type: 'MATCH_SUCCESS',
+        payload: { cardIds: [firstCard.id, secondCard.id] },
+      })
+      // 매칭 판별 종료
+      dispatch({ type: 'SET_MATCHING', payload: false })
+    } else {
+      // 매칭 실패: 1초 후 MATCH_FAIL 디스패치
+      console.log('[Matching] Fail:', firstCard.type, 'vs', secondCard.type)
+      const timeoutId = setTimeout(() => {
+        dispatch({
+          type: 'MATCH_FAIL',
+          payload: { cardIds: [firstCard.id, secondCard.id] },
+        })
+        // 매칭 판별 종료
+        dispatch({ type: 'SET_MATCHING', payload: false })
+      }, 1000)
+
+      // cleanup 함수: 컴포넌트 언마운트 시 타이머 정리
+      return () => clearTimeout(timeoutId)
+    }
+  }, [state.flippedCards, dispatch])
 
   // 로딩 중일 때
   if (state.isLoading) {
