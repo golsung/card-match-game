@@ -23,6 +23,7 @@ const initialState: GameState = {
   status: 'IDLE',
   isLoading: false,
   error: null,
+  isMatching: false,
 }
 
 /**
@@ -55,6 +56,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         status: 'PLAYING',
         isLoading: false,
         error: null,
+        isMatching: false,
       }
 
     case 'FLIP_CARD':
@@ -126,6 +128,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         error: action.payload,
         isLoading: false,
+      }
+
+    case 'SET_MATCHING':
+      // 매칭 판별 중 여부 설정
+      return {
+        ...state,
+        isMatching: action.payload,
       }
 
     default:
