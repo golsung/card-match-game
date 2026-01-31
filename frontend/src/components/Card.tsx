@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import type { Card as CardType } from '../types/Card'
+import { getFruitEmoji } from '../utils/fruitEmojis'
 
 /**
  * Card Props Interface
@@ -61,23 +62,14 @@ const CardFront = styled(CardFace)`
 `
 
 /**
- * Card Image (과일 이미지)
- * Phase 6에서 실제 이미지와 함께 사용 예정
+ * Card Emoji
+ * 과일 emoji를 표시하는 컴포넌트
+ * 이미지가 없는 경우 emoji를 대안으로 사용
  */
-// const CardImage = styled.img`
-//   width: 80%;
-//   height: 80%;
-//   object-fit: contain;
-// `
-
-/**
- * Card Type Text (임시: 이미지 없을 때)
- */
-const CardTypeText = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.primary};
-  text-transform: capitalize;
+const CardEmoji = styled.div`
+  font-size: 64px; /* 큰 emoji 표시 */
+  user-select: none; /* 드래그 방지 */
+  line-height: 1;
 `
 
 /**
@@ -104,8 +96,8 @@ export const Card: React.FC<CardProps> = ({ cardData, onClick }) => {
     <CardContainer onClick={onClick}>
       {showFront ? (
         <CardFront>
-          {/* 임시: 이미지 대신 타입 텍스트 표시 (Phase 6에서 이미지 추가) */}
-          <CardTypeText>{type}</CardTypeText>
+          {/* 과일 emoji 표시 (이미지 대안) */}
+          <CardEmoji>{getFruitEmoji(type)}</CardEmoji>
         </CardFront>
       ) : (
         <CardBack />

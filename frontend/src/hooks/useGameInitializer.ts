@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useGameContext } from '../contexts/GameContext'
 import { startGame } from '../api/gameApi'
+import { preloadFruitAssets } from '../utils/fruitEmojis'
 
 /**
  * useGameInitializer Hook
@@ -33,10 +34,14 @@ export function useGameInitializer(): void {
       dispatch({ type: 'SET_LOADING', payload: true })
 
       try {
-        // API 호출
+        // 1. 과일 에셋 preload (emoji 또는 이미지)
+        await preloadFruitAssets()
+        console.log('[Assets Preloaded] Fruit assets loaded successfully')
+
+        // 2. API 호출
         const { gameId, cards } = await startGame()
 
-        // 게임 초기화 액션 디스패치
+        // 3. 게임 초기화 액션 디스패치
         dispatch({
           type: 'INIT_GAME',
           payload: { gameId, cards },
