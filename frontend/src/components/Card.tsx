@@ -14,18 +14,29 @@ interface CardProps {
 /**
  * Card Container
  * 140x140px 크기의 카드
+ * perspective를 적용하여 3D 효과 활성화
  */
 const CardContainer = styled.div`
   width: 140px;
   height: 140px;
-  border-radius: ${({ theme }) => theme.borderRadius.md}; /* 8px */
   cursor: pointer;
   position: relative;
-  transition: transform ${({ theme }) => theme.transitions.fast};
+  perspective: 1000px; /* 3D 효과를 위한 perspective */
+`
 
-  &:hover {
-    transform: scale(1.05);
-  }
+/**
+ * Card Inner
+ * 카드의 실제 회전을 담당하는 래퍼
+ * isFlipped 또는 isSolved일 때 180도 회전
+ */
+const CardInner = styled.div<{ $showFront: boolean }>`
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d; /* 3D 변환 유지 */
+  transition: transform 0.5s; /* 0.5초 애니메이션 */
+  transform: ${({ $showFront }) =>
+    $showFront ? 'rotateY(180deg)' : 'rotateY(0deg)'};
 `
 
 /**
@@ -54,10 +65,12 @@ const CardBack = styled(CardFace)`
 
 /**
  * Card Front (앞면)
+ * 처음부터 180도 회전된 상태로 시작 (CardInner가 회전하면 정면을 향함)
  */
 const CardFront = styled(CardFace)`
   background-color: ${({ theme }) => theme.colors.cardFront}; /* 흰색 */
   box-shadow: ${({ theme }) => theme.shadows.md};
+  transform: rotateY(180deg); /* 앞면은 처음부터 180도 회전 */
 `
 
 /**
@@ -102,14 +115,15 @@ export const Card: React.FC<CardProps> = ({ cardData, onClick }) => {
 
   return (
     <CardContainer onClick={onClick}>
-      {showFront ? (
+      <CardInner $showFront={showFront}>
+        {/* 카드 뒷면 (기본 상태) */}
+        <CardBack />
+        {/* 카드 앞면 (180도 회전된 상태로 대기) */}
         <CardFront>
           {/* 임시: 이미지 대신 타입 텍스트 표시 (Phase 6에서 이미지 추가) */}
           <CardTypeText>{type}</CardTypeText>
         </CardFront>
-      ) : (
-        <CardBack />
-      )}
+      </CardInner>
     </CardContainer>
   )
 }
