@@ -182,6 +182,26 @@ function Game() {
     }
   }, [state.flippedCards, dispatch])
 
+  /**
+   * 승리 조건 판정 로직
+   * 모든 카드가 매칭되면 자동으로 VICTORY 액션을 디스패치합니다.
+   */
+  useEffect(() => {
+    // 카드가 없거나 게임이 PLAYING 상태가 아니면 실행하지 않음
+    if (state.cards.length === 0 || state.status !== 'PLAYING') {
+      return
+    }
+
+    // 모든 카드가 Solved 상태인지 확인
+    const allCardsSolved = state.cards.every((card) => card.isSolved)
+
+    // 모든 카드가 매칭되면 승리
+    if (allCardsSolved) {
+      console.log('[Victory] All cards matched! You win!')
+      dispatch({ type: 'VICTORY' })
+    }
+  }, [state.cards, state.status, dispatch])
+
   // 로딩 중일 때
   if (state.isLoading) {
     return (
