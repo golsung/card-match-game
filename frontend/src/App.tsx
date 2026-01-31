@@ -5,9 +5,11 @@ import { GlobalStyle } from './styles/GlobalStyle'
 import theme from './styles/theme'
 import { Header } from './components/Header'
 import { GameBoard } from './components/GameBoard'
+import { ResultModal } from './components/ResultModal'
 import { GameProvider } from './contexts/GameContext'
 import { useGameContext } from './contexts/GameContext'
 import { useGameInitializer } from './hooks/useGameInitializer'
+import { startGame } from './api/gameApi'
 
 /**
  * App Container
@@ -200,6 +202,48 @@ function Game() {
     }
   }, [state.life, state.status, dispatch])
 
+  /**
+   * 게임 재시작 핸들러
+   *
+   * 1. RESET_GAME 액션으로 상태 초기화
+   * 2. API 호출로 새로운 게임 시작
+   * 3. INIT_GAME 액션으로 새 게임 데이터 설정
+   */
+  const handleRestart = async () => {
+    console.log('[Game Restart] Restarting game...')
+
+    try {
+      // 1. 상태 초기화 (모달이 닫히고 상태가 IDLE로 변경됨)
+      dispatch({ type: 'RESET_GAME' })
+
+      // 2. 로딩 시작
+      dispatch({ type: 'SET_LOADING', payload: true })
+
+      // 3. API 호출로 새로운 게임 데이터 받기
+      const { gameId, cards } = await startGame()
+
+      // 4. 새 게임 초기화
+      dispatch({
+        type: 'INIT_GAME',
+        payload: { gameId, cards },
+      })
+
+      console.log(`[Game Restart] New game started: ${gameId}`)
+    } catch (error) {
+      // 에러 처리
+      const errorMessage =
+        error instanceof Error ? error.message : '게임 재시작에 실패했습니다'
+
+      dispatch({
+        type: 'SET_ERROR',
+        payload: errorMessage,
+      })
+
+      alert(`게임 재시작 실패\n\n${errorMessage}`)
+      console.error('[Game Restart Error]', error)
+    }
+  }
+
   // 로딩 중일 때
   if (state.isLoading) {
     return (
@@ -223,14 +267,22 @@ function Game() {
 
   // 게임 플레이 화면
   return (
-    <GameContainer>
-      <Header life={state.life} />
-      <GameBoard
-        cards={state.cards}
-        onCardClick={handleCardClick}
-        isMatching={state.isMatching}
+    <>
+      <GameContainer>
+        <Header life={state.life} />
+        <GameBoard
+          cards={state.cards}
+          onCardClick={handleCardClick}
+          isMatching={state.isMatching}
+        />
+      </GameContainer>
+      {/* 결과 모달 (VICTORY 또는 GAME_OVER 시 표시) */}
+      <ResultModal
+        isOpen={state.status === 'VICTORY' || state.status === 'GAME_OVER'}
+        result={state.status as 'VICTORY' | 'GAME_OVER'}
+        onRestart={handleRestart}
       />
-    </GameContainer>
+    </>
   )
 }
 
