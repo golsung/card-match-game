@@ -14,12 +14,13 @@ interface CardProps {
 
 /**
  * Card Container
- * 140x140px 크기의 카드
+ * 반응형 카드 크기 (부모 그리드에 맞춰 자동 조절)
  * perspective를 적용하여 3D 효과 활성화
  */
 const CardContainer = styled.div`
-  width: 140px;
-  height: 140px;
+  width: 100%; /* 부모 GridCell에 맞춤 */
+  aspect-ratio: 1; /* 정사각형 비율 유지 */
+  max-width: 140px; /* 큰 화면에서 최대 크기 제한 */
   cursor: pointer;
   position: relative;
   perspective: 1000px; /* 3D 효과를 위한 perspective */

@@ -33,8 +33,11 @@ const BoardContainer = styled.div<{ $isMatching: boolean }>`
 /**
  * Card Wrapper
  * Card 컴포넌트를 Grid에 맞추기 위한 래퍼
+ * width: 100%로 그리드 셀을 꽉 채우고, aspect-ratio로 정사각형 유지
  */
 const CardWrapper = styled.div`
+  width: 100%; /* 그리드 셀 너비에 맞춤 */
+  aspect-ratio: 1; /* 정사각형 그리드 셀 유지 */
   display: flex;
   justify-content: center;
   align-items: center;
