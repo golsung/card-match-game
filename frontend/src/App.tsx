@@ -94,6 +94,7 @@ function Game() {
    * 2. 이미 Flipped 카드는 클릭 무시
    * 3. flippedCards가 2개일 때는 클릭 무시
    * 4. 매칭 판별 중일 때는 클릭 무시
+   * 5. 게임 오버 상태일 때는 클릭 무시
    *
    * @param cardId - 클릭한 카드의 ID
    */
@@ -131,7 +132,13 @@ function Game() {
       return
     }
 
-      // 모든 Guard Clause를 통과하면 카드 뒤집기
+    // Guard Clause 5: 게임 오버 상태일 때는 클릭 무시
+    if (state.status === 'GAME_OVER') {
+      console.log('[Card Click] Ignored: Game is over')
+      return
+    }
+
+    // 모든 Guard Clause를 통과하면 카드 뒤집기
     console.log('[Card Click] Flipping card:', cardId)
     dispatch({ type: 'FLIP_CARD', payload: { cardId } })
   }
@@ -181,6 +188,18 @@ function Game() {
       return () => clearTimeout(timeoutId)
     }
   }, [state.flippedCards, dispatch])
+
+  /**
+   * 게임 오버 판정 로직
+   * life가 0이 되면 자동으로 GAME_OVER 액션을 디스패치합니다.
+   */
+  useEffect(() => {
+    // life가 0이고 상태가 PLAYING일 때만 실행
+    if (state.life === 0 && state.status === 'PLAYING') {
+      console.log('[Game Over] Life is 0, game over!')
+      dispatch({ type: 'GAME_OVER' })
+    }
+  }, [state.life, state.status, dispatch])
 
   // 로딩 중일 때
   if (state.isLoading) {
