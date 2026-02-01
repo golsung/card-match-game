@@ -20,7 +20,8 @@ interface GameBoardProps {
  * isMatching이 true일 때 pointer-events: none으로 광클 방지
  */
 const BoardContainer = styled.div<{ $isMatching: boolean }>`
-  flex: 1;
+  width: 100%; /* GameContainer 너비에 맞춤 */
+  height: 100%; /* GameContainer 높이에 맞춤 */
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* 4열 고정 */
   grid-template-rows: repeat(4, 1fr); /* 4행 고정 (균등 배분) */
