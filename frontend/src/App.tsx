@@ -25,12 +25,24 @@ const AppContainer = styled.div`
 `
 
 /**
+ * Game Wrapper
+ * Header와 GameContainer를 감싸는 래퍼
+ */
+const GameWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.md}; /* 16px */
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+`
+
+/**
  * Game Container
- * 반응형 게임 영역 (화면 크기에 맞춰 조절)
+ * 순수 게임 보드 영역 (4x4 그리드만 담당)
  */
 const GameContainer = styled.div`
   width: 100%;
-  max-width: 900px; /* 최대 크기 확대 (700px → 900px) */
   aspect-ratio: 1; /* 정사각형 유지 */
   background-color: ${({ theme }) => theme.colors.cardFront};
   border-radius: ${({ theme }) => theme.borderRadius.lg};
@@ -268,14 +280,16 @@ function Game() {
   // 게임 플레이 화면
   return (
     <>
-      <GameContainer>
+      <GameWrapper>
         <Header life={state.life} />
-        <GameBoard
-          cards={state.cards}
-          onCardClick={handleCardClick}
-          isMatching={state.isMatching}
-        />
-      </GameContainer>
+        <GameContainer>
+          <GameBoard
+            cards={state.cards}
+            onCardClick={handleCardClick}
+            isMatching={state.isMatching}
+          />
+        </GameContainer>
+      </GameWrapper>
       {/* 결과 모달 (VICTORY 또는 GAME_OVER 시 표시) */}
       <ResultModal
         isOpen={state.status === 'VICTORY' || state.status === 'GAME_OVER'}
