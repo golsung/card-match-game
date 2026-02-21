@@ -15,7 +15,7 @@ interface GameContextType {
  * Initial Game State
  * 게임의 초기 상태 정의
  */
-const initialState: GameState = {
+export const initialState: GameState = {
   gameId: null,
   cards: [],
   flippedCards: [],
@@ -43,7 +43,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined)
  * @example
  * dispatch({ type: 'INIT_GAME', payload: { gameId: '123', cards: [...] } })
  */
-function gameReducer(state: GameState, action: GameAction): GameState {
+export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'INIT_GAME':
       // 게임 초기화: 서버에서 받은 카드 배열과 gameId 설정
