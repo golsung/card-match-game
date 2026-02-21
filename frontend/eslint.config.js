@@ -19,5 +19,10 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // GameContext처럼 컴포넌트와 reducer/state를 함께 export하는 파일을 허용.
+      // allowConstantExport: true는 const 상수 export를 허용한다.
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    },
   },
 ])

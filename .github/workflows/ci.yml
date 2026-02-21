@@ -31,6 +31,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: ESLint 정적 분석
+        run: npm run lint
+
+      - name: TypeScript 타입 체크
+        run: npm run typecheck
+
       - name: Run unit tests (Vitest)
         run: npm test
 
@@ -60,6 +66,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: TypeScript 타입 체크
+        run: npm run typecheck
 
       - name: Run tests (Jest + Supertest)
         run: npm test
