@@ -170,12 +170,12 @@ export const ResultModal: React.FC<ResultModalProps> = ({
       : '아쉽네요. 다시 도전해보세요!'
 
   return (
-    <ModalOverlay $isOpen={isOpen}>
+    <ModalOverlay $isOpen={isOpen} data-testid="result-modal">
       <ModalContent>
         <ModalEmoji>{emoji}</ModalEmoji>
-        <ModalTitle $result={result}>{title}</ModalTitle>
+        <ModalTitle $result={result} data-testid="modal-title">{title}</ModalTitle>
         <ModalMessage>{message}</ModalMessage>
-        <RestartButton onClick={onRestart}>게임 재시작</RestartButton>
+        <RestartButton onClick={onRestart} data-testid="restart-button">게임 재시작</RestartButton>
       </ModalContent>
     </ModalOverlay>
   )

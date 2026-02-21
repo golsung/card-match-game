@@ -63,7 +63,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   isMatching,
 }) => {
   return (
-    <BoardContainer $isMatching={isMatching}>
+    <BoardContainer $isMatching={isMatching} data-testid="game-board">
       {cards.map((card) => (
         <CardWrapper key={card.id}>
           <Card cardData={card} onClick={() => onCardClick(card.id)} />
