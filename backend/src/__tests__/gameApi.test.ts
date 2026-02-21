@@ -1,28 +1,37 @@
 import request from 'supertest';
 import app from '../server';
 
-describe('GET /game/start', () => {
+describe('GET /health', () => {
+  test('should return 200 with status ok', async () => {
+    const response = await request(app).get('/health');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ status: 'ok' });
+  });
+});
+
+describe('GET /api/game/start', () => {
   test('should return 200 status code', async () => {
-    const response = await request(app).get('/game/start');
+    const response = await request(app).get('/api/game/start');
 
     expect(response.status).toBe(200);
   });
 
   test('should return gameId and cards in response body', async () => {
-    const response = await request(app).get('/game/start');
+    const response = await request(app).get('/api/game/start');
 
     expect(response.body).toHaveProperty('gameId');
     expect(response.body).toHaveProperty('cards');
   });
 
   test('should return 16 cards', async () => {
-    const response = await request(app).get('/game/start');
+    const response = await request(app).get('/api/game/start');
 
     expect(response.body.cards).toHaveLength(16);
   });
 
   test('each card should have id, type, and imgUrl', async () => {
-    const response = await request(app).get('/game/start');
+    const response = await request(app).get('/api/game/start');
     const { cards } = response.body;
 
     cards.forEach((card: any) => {
@@ -36,7 +45,7 @@ describe('GET /game/start', () => {
   });
 
   test('gameId should be a valid UUID', async () => {
-    const response = await request(app).get('/game/start');
+    const response = await request(app).get('/api/game/start');
     const { gameId } = response.body;
 
     // UUID v4 regex pattern
@@ -47,21 +56,21 @@ describe('GET /game/start', () => {
 
   test('response time should be under 200ms', async () => {
     const startTime = Date.now();
-    await request(app).get('/game/start');
+    await request(app).get('/api/game/start');
     const responseTime = Date.now() - startTime;
 
     expect(responseTime).toBeLessThan(200);
   });
 
   test('should return different gameIds on multiple calls', async () => {
-    const response1 = await request(app).get('/game/start');
-    const response2 = await request(app).get('/game/start');
+    const response1 = await request(app).get('/api/game/start');
+    const response2 = await request(app).get('/api/game/start');
 
     expect(response1.body.gameId).not.toBe(response2.body.gameId);
   });
 
   test('should have 2 cards of each fruit type', async () => {
-    const response = await request(app).get('/game/start');
+    const response = await request(app).get('/api/game/start');
     const { cards } = response.body;
 
     const typeCounts: { [key: string]: number } = {};
