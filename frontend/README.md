@@ -1,3 +1,9 @@
+# 웹기반 카드 짝 맞추기 게임
+
+[![CI](https://github.com/golsung/card-match-game/actions/workflows/ci.yml/badge.svg)](https://github.com/golsung/card-match-game/actions/workflows/ci.yml)
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
