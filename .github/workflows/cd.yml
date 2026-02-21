@@ -1,0 +1,105 @@
+name: CD
+
+# ─────────────────────────────────────────────────────────
+# 트리거: CI 워크플로우 완료 후 자동 실행 (main 브랜치 한정)
+#
+# 교육적 관점 (DevOps):
+# 별도 파일의 워크플로우 간에는 needs:를 사용할 수 없다.
+# workflow_run 이벤트로 "CI가 성공한 경우에만" CD를 실행한다.
+# ─────────────────────────────────────────────────────────
+on:
+  workflow_run:
+    workflows: ["CI"]   # ci.yml의 name: CI 와 정확히 일치
+    types: [completed]
+    branches: [main]
+
+jobs:
+  # ─────────────────────────────────────────────────────────
+  # Job 1: E2E 테스트 (Playwright)
+  # AC: CI 성공 시에만 실행 / Headless 모드 통과
+  # ─────────────────────────────────────────────────────────
+  e2e:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    # AC: CI 실패 시 CD가 실행되지 않아야 함
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Install Playwright dependencies
+        run: npm ci
+        working-directory: e2e
+
+      - name: Install Playwright browsers (Chromium only)
+        run: npx playwright install chromium --with-deps
+        working-directory: e2e
+
+      # AC: Playwright 테스트가 Headless 모드로 통과하는가?
+      - name: Run E2E tests
+        run: npm test
+        working-directory: e2e
+        env:
+          CI: true
+
+      # AC: 실패한 E2E 리포트가 Artifact로 업로드되는가?
+      - name: Upload Playwright report on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────
+  # Job 2: Docker 이미지 빌드 검증
+  # AC: e2e → docker 순서로 직렬 실행
+  # ─────────────────────────────────────────────────────────
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    # AC: e2e → docker 순서로 직렬 실행되는가?
+    needs: [e2e]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # AC: Docker 이미지가 오류 없이 빌드되는가? (frontend)
+      - name: Build frontend Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: frontend/Dockerfile
+          push: false
+          tags: card-match-game/frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # AC: Docker 이미지가 오류 없이 빌드되는가? (backend)
+      - name: Build backend Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: backend/Dockerfile
+          push: false
+          tags: card-match-game/backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
