@@ -48,7 +48,7 @@ const LifeText = styled.div`
 export const Header: React.FC<HeaderProps> = ({ life }) => {
   return (
     <HeaderContainer>
-      <LifeText>남은 기회: {life}/3</LifeText>
+      <LifeText data-testid="life-display">남은 기회: {life}/3</LifeText>
     </HeaderContainer>
   )
 }
