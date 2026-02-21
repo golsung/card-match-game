@@ -109,7 +109,13 @@ export const Card: React.FC<CardProps> = ({ cardData, onClick }) => {
   const showFront = isFlipped || isSolved
 
   return (
-    <CardContainer onClick={onClick}>
+    <CardContainer
+      onClick={onClick}
+      data-testid={`card-${cardData.id}`}
+      data-card-type={type}
+      data-is-flipped={String(isFlipped)}
+      data-is-solved={String(isSolved)}
+    >
       <CardInner $showFront={showFront}>
         {/* 카드 뒷면 (기본 상태) */}
         <CardBack />

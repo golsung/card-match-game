@@ -260,7 +260,7 @@ function Game() {
   if (state.isLoading) {
     return (
       <GameContainer>
-        <LoadingContainer>Loading...</LoadingContainer>
+        <LoadingContainer data-testid="loading-screen">Loading...</LoadingContainer>
       </GameContainer>
     )
   }
