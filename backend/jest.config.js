@@ -2,7 +2,12 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  testMatch: [
+    // 단위 테스트: 외부 의존성 없이 순수 로직만 검증
+    '**/__tests__/unit/**/*.ts',
+    // 통합 테스트: HTTP 레이어 + Express 앱 전체 검증
+    '**/__tests__/integration/**/*.ts',
+  ],
   moduleFileExtensions: ['ts', 'js', 'json'],
   collectCoverageFrom: [
     'src/**/*.ts',
