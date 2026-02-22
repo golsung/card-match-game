@@ -11,11 +11,12 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # 의존성만 먼저 복사 (레이어 캐시 최적화)
-COPY package*.json ./
+# build context가 루트(.)이므로 frontend/ 경로 명시
+COPY frontend/package*.json ./
 RUN npm ci
 
 # 소스 복사 및 프로덕션 빌드 (dist/ 생성)
-COPY . .
+COPY frontend/ .
 RUN npm run build
 
 # ─────────────────────────────────────────────────────────
