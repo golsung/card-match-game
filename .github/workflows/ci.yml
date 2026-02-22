@@ -73,5 +73,10 @@ jobs:
       - name: Run tests (Jest + Supertest)
         run: npm test
 
+      # AC: 커버리지 임계값(전 항목 80%) 미달 시 빌드 실패
+      # jest.config.js의 coverageThreshold 설정이 여기서 실제로 적용됨
+      - name: Run tests with coverage (threshold 80%)
+        run: npm run test:coverage
+
       - name: Build
         run: npm run build
