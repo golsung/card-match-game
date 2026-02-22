@@ -1,5 +1,5 @@
-import { generateCards } from '../utils/generateCards';
-import { FRUIT_TYPES } from '../types/Card';
+import { generateCards } from '../../utils/generateCards';
+import { FRUIT_TYPES } from '../../types/Card';
 
 describe('generateCards Function', () => {
   test('should generate exactly 16 cards', () => {

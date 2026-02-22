@@ -23,7 +23,7 @@ export const errorHandler = (
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
   // 이미 설정된 상태 코드가 있으면 사용, 없으면 500
   const statusCode = res.statusCode !== 200 ? res.statusCode : 500;

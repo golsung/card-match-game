@@ -1,4 +1,4 @@
-import { shuffle } from '../utils/shuffle';
+import { shuffle } from '../../utils/shuffle';
 
 describe('Fisher-Yates Shuffle Algorithm', () => {
   test('should maintain array length', () => {

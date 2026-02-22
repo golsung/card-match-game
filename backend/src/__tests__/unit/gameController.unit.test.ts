@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { startGame } from '../controllers/gameController';
-import { generateCards } from '../utils/generateCards';
-import { Card } from '../types/Card';
+import { startGame } from '../../controllers/gameController';
+import { generateCards } from '../../utils/generateCards';
+import { Card } from '../../types/Card';
 
 // generateCards 모듈 mock → 컨트롤러 로직만 격리
 // 비유: 엔진 테스트 시 연료 시스템을 가짜로 교체하여 엔진 로직만 검증
-jest.mock('../utils/generateCards');
+jest.mock('../../utils/generateCards');
 const mockGenerateCards = generateCards as jest.MockedFunction<typeof generateCards>;
 
 // 테스트용 고정 카드 데이터
