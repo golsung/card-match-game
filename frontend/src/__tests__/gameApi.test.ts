@@ -1,9 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import axios from 'axios'
+import type { AxiosError } from 'axios'
 import { startGame } from '../api/gameApi'
 
 vi.mock('axios')
 const mockedAxios = vi.mocked(axios, true)
+
+// axios.isAxiosError는 타입 가드(type predicate) 함수이므로
+// mockImplementation으로 타입을 명시하여 TypeScript 오류를 방지한다.
+const mockIsAxiosError = (returnValue: boolean) =>
+  vi.mocked(axios.isAxiosError).mockImplementation(
+    (_err): _err is AxiosError => returnValue,
+  )
 
 // ─── 정상 응답 ─────────────────────────────────────────────────────────────────
 describe('startGame — 백엔드 정상 응답', () => {
@@ -44,7 +52,7 @@ describe('startGame — 백엔드 404 (GitHub Pages 환경)', () => {
       request: {},
     })
     mockedAxios.get = vi.fn().mockRejectedValue(axiosError)
-    mockedAxios.isAxiosError = vi.fn().mockReturnValue(true)
+    mockIsAxiosError(true)
 
     const { gameId, cards } = await startGame()
 
@@ -61,7 +69,7 @@ describe('startGame — 백엔드 404 (GitHub Pages 환경)', () => {
       request: {},
     })
     mockedAxios.get = vi.fn().mockRejectedValue(axiosError)
-    mockedAxios.isAxiosError = vi.fn().mockReturnValue(true)
+    mockIsAxiosError(true)
 
     const { cards } = await startGame()
 
@@ -92,7 +100,7 @@ describe('startGame — 네트워크 오류 (서버 응답 없음)', () => {
       request: {},
     })
     mockedAxios.get = vi.fn().mockRejectedValue(networkError)
-    mockedAxios.isAxiosError = vi.fn().mockReturnValue(true)
+    mockIsAxiosError(true)
 
     const { gameId, cards } = await startGame()
 
