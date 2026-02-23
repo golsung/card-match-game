@@ -31,6 +31,8 @@ jobs:
   static-analysis:
     name: Static Analysis (ESLint + TypeScript)
     runs-on: ubuntu-latest
+    # 잡이 무한 대기 상태에 빠지지 않도록 최대 실행 시간을 제한한다
+    timeout-minutes: 10
 
     steps:
       - name: 소스 코드 체크아웃
@@ -182,6 +184,10 @@ jobs:
     name: Unit Tests (Frontend Vitest + Backend Jest)
     runs-on: ubuntu-latest
     needs: [static-analysis, security-scan]
+    # CI Gate: Stage 1(static-analysis, security-scan)이 모두 성공해야 실행된다.
+    # Fail Fast 원칙: 코드 품질·보안 문제가 있는 소스를 테스트하는 낭비를 방지한다.
+    # 비유: 부품 도면 검토(정적 분석)와 재료 검사(보안 스캔)를 통과한 부품만 조립 테스트에 투입하는 것과 같다.
+    timeout-minutes: 10
 
     steps:
       - name: 소스 코드 체크아웃
@@ -244,6 +250,9 @@ jobs:
     name: Integration Tests + Coverage (Backend Jest)
     runs-on: ubuntu-latest
     needs: [static-analysis, security-scan]
+    # CI Gate: Stage 1(static-analysis, security-scan)이 모두 성공해야 실행된다.
+    # 커버리지 측정은 전체 소스를 instrument하므로 unit-test보다 더 긴 시간이 필요하다.
+    timeout-minutes: 15
 
     steps:
       - name: 소스 코드 체크아웃
