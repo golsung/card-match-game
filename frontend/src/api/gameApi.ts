@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Card } from '../types/Card'
+import type { Card, FruitType } from '../types/Card'
 
 /**
  * API Response for /api/game/start
@@ -14,12 +14,45 @@ interface GameStartResponse {
   }>
 }
 
+// 8가지 과일 타입 (백엔드 FRUIT_TYPES와 동일)
+const FRUIT_TYPES: FruitType[] = [
+  'apple', 'banana', 'cherry', 'grape',
+  'lemon', 'orange', 'strawberry', 'watermelon',
+]
+
+// Fisher-Yates 셔플 (백엔드 shuffle.ts와 동일 알고리즘)
+function shuffleArray<T>(array: T[]): T[] {
+  const arr = [...array]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}
+
+/**
+ * 클라이언트 사이드 게임 생성 (GitHub Pages 등 백엔드 없는 환경용 폴백)
+ * 백엔드 generateCards() + shuffle() 로직을 브라우저에서 동일하게 실행한다.
+ */
+function generateLocalGame(): { gameId: string; cards: Card[] } {
+  const rawCards = FRUIT_TYPES.flatMap((type) => [
+    { id: crypto.randomUUID(), type, imgUrl: `/images/${type}.png` },
+    { id: crypto.randomUUID(), type, imgUrl: `/images/${type}.png` },
+  ])
+  const cards: Card[] = shuffleArray(rawCards).map((card) => ({
+    ...card,
+    isFlipped: false,
+    isSolved: false,
+  }))
+  return { gameId: crypto.randomUUID(), cards }
+}
+
 /**
  * Start a new game
  * /api/game/start 엔드포인트를 호출하여 새 게임을 시작합니다.
+ * 백엔드를 사용할 수 없는 환경(GitHub Pages 등)에서는 클라이언트 사이드 폴백으로 게임을 생성합니다.
  *
  * @returns Promise<{ gameId: string; cards: Card[] }>
- * @throws Error if API call fails
  *
  * @example
  * const { gameId, cards } = await startGame()
@@ -41,20 +74,16 @@ export async function startGame(): Promise<{ gameId: string; cards: Card[] }> {
       cards,
     }
   } catch (error) {
-    console.error('[API Error] Failed to start game:', error)
-
-    // 에러 메시지를 더 명확하게 전달
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        // 서버가 응답을 반환했지만 에러 상태 코드
-        throw new Error(`서버 오류: ${error.response.status}`)
-      } else if (error.request) {
-        // 요청은 보냈지만 응답을 받지 못함
-        throw new Error('서버 연결에 실패했습니다')
-      }
+    // 백엔드를 사용할 수 없는 환경(GitHub Pages, 오프라인 등)에서 클라이언트 사이드로 게임 생성
+    if (
+      axios.isAxiosError(error) &&
+      (error.response?.status === 404 || !error.response)
+    ) {
+      console.warn('[API Fallback] Backend unavailable, generating game locally')
+      return generateLocalGame()
     }
 
-    // 기타 에러
+    console.error('[API Error] Failed to start game:', error)
     throw new Error('게임 시작에 실패했습니다')
   }
 }
