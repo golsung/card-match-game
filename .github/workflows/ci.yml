@@ -117,8 +117,10 @@ jobs:
         working-directory: frontend
 
       # audit-level=high: HIGH 이상 심각도만 빌드 실패 처리 (moderate 이하는 경고)
+      # --omit=dev: devDependencies 제외 — eslint, jest 등 빌드 도구는 프로덕션 컨테이너에
+      #             포함되지 않으므로 프로덕션 의존성만 스캔하여 false positive를 제거한다.
       - name: Frontend 의존성 취약점 스캔 (npm audit)
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=high --omit=dev
         working-directory: frontend
 
       # ── Backend 의존성 취약점 스캔 ────────────────────────
@@ -134,12 +136,15 @@ jobs:
         working-directory: backend
 
       - name: Backend 의존성 취약점 스캔 (npm audit)
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=high --omit=dev
         working-directory: backend
 
       # ── Trivy 파일시스템 스캔 ─────────────────────────────
       # scan-type: fs — 소스 코드, 설정 파일, IaC 전체를 스캔한다.
       # ignore-unfixed: true — 패치가 없는 취약점은 제외하여 false positive를 감소시킨다.
+      # skip-dirs: node_modules — 설치된 모듈 디렉토리는 제외하고 package-lock.json 기준으로만 스캔.
+      #   devDependencies(eslint, jest, typescript-eslint)의 minimatch 전이 취약점은
+      #   프로덕션 컨테이너(npm ci --omit=dev)에 포함되지 않으므로 스캔 대상에서 제외한다.
       - name: Trivy 소스 코드 및 설정 파일 보안 스캔
         uses: aquasecurity/trivy-action@master
         with:
@@ -149,6 +154,7 @@ jobs:
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
+          skip-dirs: 'node_modules,frontend/node_modules,backend/node_modules'
 
       # ── 결과 가시성: GitHub Step Summary 출력 ────────────
       - name: 보안 스캔 결과 요약 출력
