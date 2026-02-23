@@ -117,8 +117,10 @@ jobs:
         working-directory: frontend
 
       # audit-level=high: HIGH 이상 심각도만 빌드 실패 처리 (moderate 이하는 경고)
+      # --omit=dev: devDependencies 제외 — 빌드/린트 도구는 프로덕션 컨테이너에 포함되지 않으므로
+      #             프로덕션 의존성만 스캔하여 false positive를 제거한다.
       - name: Frontend 의존성 취약점 스캔 (npm audit)
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=high --omit=dev
         working-directory: frontend
 
       # ── Backend 의존성 취약점 스캔 ────────────────────────
@@ -134,7 +136,7 @@ jobs:
         working-directory: backend
 
       - name: Backend 의존성 취약점 스캔 (npm audit)
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=high --omit=dev
         working-directory: backend
 
       # ── Trivy 파일시스템 스캔 ─────────────────────────────
