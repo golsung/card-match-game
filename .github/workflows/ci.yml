@@ -99,6 +99,9 @@ jobs:
   security-scan:
     name: Security Scan (npm audit + Trivy)
     runs-on: ubuntu-latest
+    # Trivy DB 다운로드 및 전체 소스 스캔 시간을 포함하여 타임아웃을 15분으로 설정한다.
+    # static-analysis(10분)보다 넉넉하게 설정: Trivy는 첫 실행 시 취약점 DB를 원격에서 가져온다.
+    timeout-minutes: 15
 
     steps:
       - name: 소스 코드 체크아웃
